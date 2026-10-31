@@ -12,7 +12,3 @@
 2. Открой папку проекта в VS Code.
 
 Код редактора будет добавлен на следующих этапах.
-
-https://github.com/halimaaltyn2026/notes-editor
-
-https://github.com/halimaaltyn2026/notes-editor/commit/68daf1009580f8a0c516cbe79183e87456d22d83
