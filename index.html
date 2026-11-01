@@ -1,34 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>notes-editor</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: sans-serif; }
-    header { padding: 12px 16px; background: #1f2937; color: #fff; }
-    .tabs { display: none; }
-    .app { display: flex; height: calc(100vh - 48px); }
-    .list { width: 280px; border-right: 1px solid #ccc; padding: 12px; overflow-y: auto; }
-    .editor { flex: 1; padding: 12px; display: flex; flex-direction: column; }
-    .editor textarea { width: 100%; flex: 1; font-size: 16px; padding: 8px; }
-    .new-btn { width: 100%; padding: 10px; font-size: 16px; margin-bottom: 8px; }
-    .del-btn { margin-top: 8px; padding: 10px; font-size: 16px; color: #b91c1c; }
-    ul { list-style: none; padding: 0; margin: 0; }
-    li { padding: 10px; border-bottom: 1px solid #ddd; cursor: pointer; }
-    li.active { background: #e5e7eb; font-weight: bold; }
-    li.empty { cursor: default; color: #6b7280; border: none; text-align: center; padding: 24px 8px; }
-    @media (max-width: 600px) {
-      .tabs { display: flex; }
-      .tabs button { flex: 1; padding: 12px; font-size: 16px; }
-      .app { height: auto; }
-      .list, .editor { display: none; width: 100%; border: none; }
-      .editor textarea { height: 60vh; flex: none; }
-      .app.show-list .list { display: block; }
-      .app.show-editor .editor { display: flex; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header><strong>notes-editor</strong></header>
@@ -46,84 +23,6 @@
       <button class="del-btn" id="del" onclick="deleteNote()" disabled>Удалить заметку</button>
     </main>
   </div>
-  <script>
-    var KEY = 'notes-editor-notes';
-    var app = document.getElementById('app');
-    var listEl = document.getElementById('notes');
-    var textarea = document.getElementById('text');
-    var delBtn = document.getElementById('del');
-    var notes = load();
-    var currentId = null;
-
-    function load() {
-      try { return JSON.parse(localStorage.getItem(KEY)) || []; }
-      catch (e) { return []; }
-    }
-    function save() {
-      localStorage.setItem(KEY, JSON.stringify(notes));
-    }
-    function show(name) {
-      app.className = 'app show-' + name;
-    }
-    function titleOf(note) {
-      var first = note.text.split('\n')[0].trim();
-      return first || 'Без названия';
-    }
-    function render() {
-      listEl.innerHTML = '';
-      if (notes.length === 0) {
-        var empty = document.createElement('li');
-        empty.className = 'empty';
-        empty.textContent = 'Заметок пока нет. Нажми «+ Новая заметка», чтобы начать.';
-        listEl.appendChild(empty);
-        return;
-      }
-      notes.forEach(function (note) {
-        var li = document.createElement('li');
-        li.textContent = titleOf(note);
-        if (note.id === currentId) li.className = 'active';
-        li.onclick = function () { openNote(note.id); show('editor'); };
-        listEl.appendChild(li);
-      });
-    }
-    function openNote(id) {
-      currentId = id;
-      var note = notes.find(function (n) { return n.id === id; });
-      textarea.disabled = false;
-      delBtn.disabled = false;
-      textarea.value = note ? note.text : '';
-      render();
-    }
-    function createNote() {
-      var note = { id: Date.now(), text: '' };
-      notes.unshift(note);
-      save();
-      openNote(note.id);
-      show('editor');
-      textarea.focus();
-    }
-    function deleteNote() {
-      if (currentId === null) return;
-      if (!confirm('Удалить эту заметку? Это нельзя отменить.')) return;
-      notes = notes.filter(function (n) { return n.id !== currentId; });
-      save();
-      currentId = null;
-      textarea.value = '';
-      textarea.disabled = true;
-      delBtn.disabled = true;
-      render();
-      show('list');
-    }
-    textarea.addEventListener('input', function () {
-      var note = notes.find(function (n) { return n.id === currentId; });
-      if (!note) return;
-      note.text = textarea.value;
-      save();
-      render();
-    });
-
-    render();
-    if (notes.length) openNote(notes[0].id);
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
