@@ -1,0 +1,108 @@
+* { 
+  box-sizing: border-box;
+}
+
+body { 
+  margin: 0; font-family: sans-serif; 
+}
+
+header { 
+  padding: 12px 16px; 
+  background: #1f2937; color: #fff; 
+}
+
+.tabs { 
+  display: none; 
+}
+
+.app { 
+  display: flex; 
+  height: calc(100vh - 48px); 
+}
+
+.list { 
+  width: 280px; 
+  border-right: 1px solid #ccc; 
+  padding: 12px; 
+  overflow-y: auto; 
+}
+
+.editor { 
+  flex: 1; 
+  padding: 12px; 
+  display: flex; 
+  flex-direction: column; 
+}
+
+.editor textarea { 
+  width: 100%; 
+  flex: 1; 
+  font-size: 16px; 
+  padding: 8px; 
+}
+
+.new-btn { 
+  width: 100%; 
+  padding: 10px; 
+  font-size: 16px; 
+  margin-bottom: 8px; 
+}
+
+.del-btn { 
+  margin-top: 8px; 
+  padding: 10px; 
+  font-size: 16px; 
+  color: #b91c1c; 
+}
+
+ul { 
+  list-style: none; 
+  padding: 0; margin: 0; 
+}
+
+li { padding: 10px; 
+    border-bottom: 1px solid #ddd; 
+    cursor: pointer; 
+   }
+
+li.active { 
+  background: #e5e7eb; 
+  font-weight: bold; 
+}
+
+li.empty { 
+  cursor: default; 
+  color: #6b7280; 
+  border: none; 
+  text-align: center; 
+  padding: 24px 8px; 
+}
+
+@media (max-width: 600px) {
+  .tabs { 
+    display: flex; 
+  }
+  .tabs button { 
+    flex: 1; 
+    padding: 12px; 
+    font-size: 16px; 
+  }
+  .app { 
+    height: auto; 
+  }
+  .list, .editor { 
+    display: none; 
+    width: 100%; 
+    border: none; 
+  }
+  .editor textarea { 
+    height: 60vh; 
+    flex: none; 
+  }
+  .app.show-list .list { 
+    display: block; 
+  }
+  .app.show-editor .editor { 
+    display: flex; 
+  }
+}
