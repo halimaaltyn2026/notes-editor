@@ -73,6 +73,7 @@ function openNote(id) {
   delBtn.disabled = false;
   textarea.value = note ? note.text : '';
   render();
+  updatePreview();
 }
 
 // Создаём новую пустую заметку и сразу открываем её
@@ -107,8 +108,27 @@ textarea.addEventListener('input', () => {
   note.text = textarea.value;
   save();
   render();
+  updatePreview();
 });
 
 // Запуск: рисуем список и открываем первую заметку, если она есть
 render();
 if (notes.length) openNote(notes[0].id);
+
+function updatePreview() {
+  document.getElementById("preview").innerHTML =
+    renderMarkdown(document.getElementById("text").value);
+}
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function renderMarkdown(text) {
+  let html = escapeHtml(text);
+  html = html.replace(/^# (.*)$/gm, "<h1>$1</h1>");
+  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  return html.replace(/\n/g, "<br>");
+}
