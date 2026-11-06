@@ -11,6 +11,7 @@ const delBtn = document.getElementById('del');       // кнопка «Удал�
 // notes — массив всех заметок, currentId — какая заметка сейчас открыта
 let notes = load();
 let currentId = null;
+let previewTimer;
 
 // Достаём заметки из браузера. Если там пусто или ошибка — начинаем с пустого списка
 function load() {
@@ -116,9 +117,13 @@ render();
 if (notes.length) openNote(notes[0].id);
 
 function updatePreview() {
-  document.getElementById("preview").innerHTML =
-    renderMarkdown(document.getElementById("text").value);
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(function () {
+    document.getElementById("preview").innerHTML =
+      renderMarkdown(document.getElementById("text").value);
+  }, 200);
 }
+
 function escapeHtml(text) {
   return text
     .replace(/&/g, "&amp;")
