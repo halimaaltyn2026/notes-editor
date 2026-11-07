@@ -12,6 +12,7 @@ const delBtn = document.getElementById('del');       // кнопка «Удал�
 let notes = load();
 let currentId = null;
 let previewTimer;
+let saveTimer;
 
 // Достаём заметки из браузера. Если там пусто или ошибка — начинаем с пустого списка
 function load() {
@@ -107,7 +108,8 @@ textarea.addEventListener('input', () => {
   const note = notes.find(n => n.id === currentId);
   if (!note) return;
   note.text = textarea.value;
-  save();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(save, 1000);
   render();
   updatePreview();
 });
