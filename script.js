@@ -17,10 +17,12 @@ let saveTimer;
 
 // Достаём заметки из браузера. Если там пусто или ошибка — начинаем с пустого списка
 function load() {
-  try { 
-    return JSON.parse(localStorage.getItem(KEY)) || []; 
-  } catch (e) { 
-    return []; 
+  try {
+    const data = JSON.parse(localStorage.getItem(KEY));
+    if (!Array.isArray(data)) return [];
+    return data.filter(n => n && typeof n.text === 'string' && n.id !== undefined);
+  } catch (e) {
+    return [];
   }
 }
 
