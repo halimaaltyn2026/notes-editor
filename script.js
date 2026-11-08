@@ -1,6 +1,7 @@
 
 // Имя, под которым браузер хранит наши заметки
 const KEY = 'notes-editor-notes';
+const CURRENT_KEY = 'notes-editor-current';
 
 // Находим на странице нужные элементы, чтобы потом с ними работать
 const app = document.getElementById('app');          // весь редактор (две колонки или вкладки)
@@ -70,6 +71,7 @@ function render() {
 // Открываем заметку: показываем её текст в поле и включаем поле и кнопку удаления
 function openNote(id) {
   currentId = id;
+  localStorage.setItem(CURRENT_KEY, id);
   const note = notes.find(n => n.id === id);
   textarea.disabled = false;
   delBtn.disabled = false;
@@ -91,6 +93,7 @@ function createNote() {
 // Удаляем открытую заметку, но сначала спрашиваем подтверждение
 function deleteNote() {
   if (currentId === null) return;
+  localStorage.removeItem(CURRENT_KEY);
   if (!confirm('Удалить эту заметку? Это нельзя отменить.')) return; // «Отмена» — ничего не делаем
   
   notes = notes.filter(n => n.id !== currentId); // убираем заметку из списка
@@ -116,8 +119,11 @@ textarea.addEventListener('input', () => {
 
 // Запуск: рисуем список и открываем первую заметку, если она есть
 render();
-if (notes.length) openNote(notes[0].id);
 
+const savedId = Number(localStorage.getItem(CURRENT_KEY));
+const savedNote = notes.find(n => n.id === savedId);
+if (savedNote) openNote(savedNote.id);
+else if (notes.length) openNote(notes[0].id);
 function updatePreview() {
   clearTimeout(previewTimer);
   previewTimer = setTimeout(function () {
