@@ -9,6 +9,10 @@ const listEl = document.getElementById('notes');     // список замет�
 const textarea = document.getElementById('text');    // поле, где пишем текст
 const delBtn = document.getElementById('del');       // кнопка «Удалить заметку»
 
+// Строка состояния под полем ввода
+const statusEl = document.createElement('p');
+statusEl.id = 'status';
+textarea.insertAdjacentElement('afterend', statusEl);
 // notes — массив всех заметок, currentId — какая заметка сейчас открыта
 let notes = load();
 let currentId = null;
@@ -28,7 +32,14 @@ function load() {
 
 // Сохраняем все заметки в браузер
 function save() {
-  localStorage.setItem(KEY, JSON.stringify(notes));
+  try {
+    localStorage.setItem(KEY, JSON.stringify(notes));
+    statusEl.textContent = '';
+  } catch (e) {
+    statusEl.textContent = e.name === 'QuotaExceededError'
+      ? 'Не удалось сохранить: в браузере не хватает места. Скопируй текст и удали ненужные заметки.'
+      : 'Не удалось сохранить заметку.';
+  }
 }
 
 // Переключаем вкладку на узком экране: 'list' (заметки) или 'editor' (редактор)
@@ -95,12 +106,12 @@ function createNote() {
 // Удаляем открытую заметку, но сначала спрашиваем подтверждение
 function deleteNote() {
   if (currentId === null) return;
-  localStorage.removeItem(CURRENT_KEY);
   if (!confirm('Удалить эту заметку? Это нельзя отменить.')) return; // «Отмена» — ничего не делаем
   
   notes = notes.filter(n => n.id !== currentId); // убираем заметку из списка
   save();
   currentId = null;
+  localStorage.removeItem(CURRENT_KEY);
   textarea.value = '';
   textarea.disabled = true;                // поле и кнопка снова неактивны
   delBtn.disabled = true;
