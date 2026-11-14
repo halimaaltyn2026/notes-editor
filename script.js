@@ -2,6 +2,7 @@
 // Имя, под которым браузер хранит наши заметки
 const KEY = 'notes-editor-notes';
 const CURRENT_KEY = 'notes-editor-current';
+const TIME_KEY = 'notes-editor-saved-at';
 
 // Находим на странице нужные элементы, чтобы потом с ними работать
 const app = document.getElementById('app');          // весь редактор (две колонки или вкладки)
@@ -48,6 +49,11 @@ function save() {
       ? 'Не удалось сохранить: в браузере не хватает места. Скопируй текст и удали ненужные заметки.'
       : 'Не удалось сохранить заметку.';
   }
+}
+
+// Переключаем вкладку на узком экране: 'list' (заметки) или 'editor' (редактор)
+function show(name) {
+  app.className = `app show-${name}`;
 }
 
 // Название заметки для списка — это её первая строка
@@ -140,6 +146,8 @@ const savedId = Number(localStorage.getItem(CURRENT_KEY));
 const savedNote = notes.find(n => n.id === savedId);
 if (savedNote) openNote(savedNote.id);
 else if (notes.length) openNote(notes[0].id);
+const savedAt = Number(localStorage.getItem(TIME_KEY));
+if (savedAt) showSavedTime(savedAt);
 function updatePreview() {
   clearTimeout(previewTimer);
   previewTimer = setTimeout(function () {
