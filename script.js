@@ -31,20 +31,23 @@ function load() {
 }
 
 // Сохраняем все заметки в браузер
+// Показываем время последнего сохранения
+function showSavedTime(ts) {
+  const time = new Date(ts).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  statusEl.textContent = 'Сохранено в ' + time;
+}
+
 function save() {
   try {
     localStorage.setItem(KEY, JSON.stringify(notes));
-    statusEl.textContent = '';
+    const now = Date.now();
+    localStorage.setItem(TIME_KEY, now);
+    showSavedTime(now);
   } catch (e) {
     statusEl.textContent = e.name === 'QuotaExceededError'
       ? 'Не удалось сохранить: в браузере не хватает места. Скопируй текст и удали ненужные заметки.'
       : 'Не удалось сохранить заметку.';
   }
-}
-
-// Переключаем вкладку на узком экране: 'list' (заметки) или 'editor' (редактор)
-function show(name) {
-  app.className = `app show-${name}`;
 }
 
 // Название заметки для списка — это её первая строка
