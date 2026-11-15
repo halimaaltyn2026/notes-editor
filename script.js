@@ -62,6 +62,16 @@ function titleOf(note) {
   return first || 'Без названия';
 }
 
+let query = '';
+
+function normalize(s) {
+  return s.trim().toLowerCase();
+}
+
+function matches(note, q) {
+  if (!q) return true;
+  return normalize(note.text).includes(q);
+}
 // Рисуем список заметок заново
 function render() {
   listEl.innerHTML = '';
@@ -76,7 +86,10 @@ function render() {
   }
 
   // Иначе добавляем в список каждую заметку
-  notes.forEach(note => {
+  const q = normalize(query);
+const found = notes.filter(note => matches(note, q));
+
+found.forEach(note => {
     const li = document.createElement('li');
     li.textContent = titleOf(note);
     if (note.id === currentId) li.className = 'active'; // выделяем открытую заметку
@@ -169,3 +182,8 @@ function renderMarkdown(text) {
   html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
   return html.replace(/\n/g, "<br>");
 }
+const searchEl = document.getElementById('search');
+searchEl.addEventListener('input', () => {
+  query = searchEl.value;
+  render();
+});
