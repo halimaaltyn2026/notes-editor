@@ -105,7 +105,22 @@ function render() {
   // Иначе добавляем в список каждую заметку
   const q = normalize(query);
 const found = notes.filter(note => matches(note, q));
-
+if (found.length === 0) {
+  const empty = document.createElement('li');
+  empty.className = 'empty';
+  empty.textContent = 'Ничего не найдено. ';
+  const btn = document.createElement('button');
+  btn.textContent = 'Сбросить поиск';
+  btn.onclick = () => {
+    query = '';
+    searchEl.value = '';
+    render();
+  };
+  empty.appendChild(btn);
+  listEl.appendChild(empty);
+  return;
+}
+  
 found.forEach(note => {
     const li = document.createElement('li');
     highlight(li, titleOf(note), q);
