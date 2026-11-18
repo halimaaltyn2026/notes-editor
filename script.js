@@ -72,6 +72,23 @@ function matches(note, q) {
   if (!q) return true;
   return normalize(note.text).includes(q);
 }
+
+function highlight(el, text, q) {
+  el.textContent = '';
+  const lower = text.toLowerCase();
+  let pos = 0;
+  while (q) {
+    const i = lower.indexOf(q, pos);
+    if (i === -1) break;
+    el.appendChild(document.createTextNode(text.slice(pos, i)));
+    const mark = document.createElement('mark');
+    mark.textContent = text.slice(i, i + q.length);
+    el.appendChild(mark);
+    pos = i + q.length;
+  }
+  el.appendChild(document.createTextNode(text.slice(pos)));
+}
+
 // Рисуем список заметок заново
 function render() {
   listEl.innerHTML = '';
@@ -91,7 +108,7 @@ const found = notes.filter(note => matches(note, q));
 
 found.forEach(note => {
     const li = document.createElement('li');
-    li.textContent = titleOf(note);
+    highlight(li, titleOf(note), q);
     if (note.id === currentId) li.className = 'active'; // выделяем открытую заметку
     
     li.onclick = () => { 
