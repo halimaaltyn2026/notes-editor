@@ -219,3 +219,23 @@ searchEl.addEventListener('input', () => {
   query = searchEl.value;
   render();
 });
+
+// Экспорт: все заметки одним JSON-файлом
+function exportNotes() {
+  const data = {
+    app: 'notes-editor',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    notes: notes
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'notes-export.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('export-btn').addEventListener('click', exportNotes);
