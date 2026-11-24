@@ -18,6 +18,12 @@
       <input id="search" placeholder="Поиск">
       <button class="new-btn" onclick="createNote()">+ Новая заметка</button>
       <button class="new-btn" id="export-btn">Экспорт</button>
+      <!-- Кнопка, которую видит человек -->
+<button class="new-btn" id="import-btn">Импорт</button>
+
+<!-- Скрытое поле выбора файла. Само оно некрасивое, поэтому прячем (hidden)
+     и открываем программно при нажатии на кнопку «Импорт» -->
+<input type="file" id="import-file" accept=".json,application/json" hidden>
       <ul id="notes"></ul>
     </aside>
     <main class="editor">
