@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Тесты разбора</title>
+</head>
+<body>
+  <h1>Тесты разбора</h1>
+  <ul id="results"></ul>
+  <p id="summary"></p>
+
+  <!-- Подключаем ТОЛЬКО parser.js: тесты проверяют именно разбор -->
+  <script src="parser.js"></script>
+  <script>
+    const results = document.getElementById('results');
+    let failed = 0;
+
+    // check: название теста, текст для разбора и проверка.
+    // Проверка возвращает true (всё хорошо) или false (тест упал)
+    function check(name, input, test) {
+      const html = renderMarkdown(input); // разбираем текст, как это делает редактор
+      const ok = test(html);              // проверяем результат
+      if (!ok) failed++;
+
+      const li = document.createElement('li');
+      li.textContent = (ok ? 'ОК: ' : 'УПАЛ: ') + name + '  →  ' + html;
+      li.style.color = ok ? 'green' : 'red';
+      results.appendChild(li);
+    }
+
+    // 1. Заголовок
+    check('заголовок', '# Привет',
+      html => html === '<h1>Привет</h1>');
+
+    // 2. Список
+    check('список', '- раз\n- два',
+      html => html === '<ul><li>раз</li><li>два</li></ul>');
+
+    // 3. Код
+    check('код', 'вот `код` тут',
+      html => html.includes('<code>код</code>'));
+
+    // 4. Ссылка
+    check('ссылка', '[сайт](https://example.com)',
+      html => html.includes('<a href="https://example.com"') && html.includes('>сайт</a>'));
+
+    // 5. Попытка вставить скрипт: настоящего тега быть не должно,
+    //    а безопасный текст &lt;script должен остаться
+    check('скрипт не выживает', '<script>alert(1)</script>',
+      html => !html.includes('<script') && html.includes('&lt;script'));
+
+    // 6. Обработчик события в теге (ещё один способ атаки)
+    check('onerror не выживает', '<img src=x onerror=alert(1)>',
+      html => !html.includes('<img'));
+
+    // 7. Опасная ссылка javascript: не должна стать ссылкой
+    check('javascript: не ссылка', '[клик](javascript:alert(1))',
+      html => !html.includes('<a '));
+
+    // Итог
+    document.getElementById('summary').textContent =
+      failed === 0 ? 'Все тесты прошли ✅' : 'Упало тестов: ' + failed + ' ❌';
+  </script>
+</body>
+  </html>
