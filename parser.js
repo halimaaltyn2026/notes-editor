@@ -9,7 +9,7 @@ function escapeHtml(text) {
 // Превращаем текст заметки в HTML
 function renderMarkdown(text) {
   // Сначала ВСЕГДА экранируем: после этого в тексте нет настоящих тегов
-  let html = text; // ВРЕМЕННО без защиты, потом вернём
+  let html = escapeHtml(text);
 
   // # Заголовок
   html = html.replace(/^# (.*)$/gm, "<h1>$1</h1>");
