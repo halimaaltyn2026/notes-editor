@@ -239,3 +239,73 @@ function exportNotes() {
 }
 
 document.getElementById('export-btn').addEventListener('click', exportNotes);
+
+// Импорт: читаем выбранный файл, проверяем его и добавляем заметки
+function importNotes(file) {
+  // FileReader умеет читать файлы, которые выбрал человек
+  const reader = new FileReader();
+
+  // Эта функция сработает, когда файл полностью прочитан
+  reader.onload = () => {
+    let data;
+
+    // Проверка 1: это вообще JSON?
+    // JSON.parse падает с ошибкой, если внутри не JSON (например, картинка)
+    try {
+      data = JSON.parse(reader.result); // reader.result — текст файла
+    } catch (e) {
+      alert('Не удалось прочитать файл: это не JSON.');
+      return; // выходим, ничего не меняя
+    }
+
+    // Проверка 2: это наш файл? Должна быть метка app: 'notes-editor'
+    // и notes должен быть массивом. Так мы отличаем наш экспорт от чужого JSON
+    if (!data || data.app !== 'notes-editor' || !Array.isArray(data.notes)) {
+      alert('Это не файл экспорта notes-editor.');
+      return;
+    }
+
+    // Проверка 3: у каждой заметки есть числовой id и текстовый text?
+    // every — «все элементы массива подходят под условие»
+    const valid = data.notes.every(
+      n => n && typeof n.id === 'number' && typeof n.text === 'string'
+    );
+    if (!valid) {
+      alert('Файл повреждён: у некоторых заметок неверная структура.');
+      return;
+    }
+
+    // Правило для совпадающих заметок: если заметка с таким id уже есть,
+    // оставляем текущую, а ту, что из файла, пропускаем.
+    // Set — это список уникальных значений, в нём удобно искать id
+    const ids = new Set(notes.map(n => n.id));
+
+    const fresh = data.notes
+      .filter(n => !ids.has(n.id))                 // оставляем только новые
+      .map(n => ({ id: n.id, text: n.text }));     // берём только нужные поля, лишнее из файла не тащим
+
+    notes = notes.concat(fresh); // добавляем новые заметки к существующим
+    save();                      // сохраняем в браузер
+    render();                    // перерисовываем список
+
+    // Сообщаем человеку, что произошло
+    alert(`Добавлено: ${fresh.length}, пропущено (уже есть): ${data.notes.length - fresh.length}`);
+  };
+
+  // Запускаем чтение файла как текста. Когда закончит, вызовется onload выше
+  reader.readAsText(file);
+}
+
+// Находим кнопку и скрытое поле выбора файла
+const importBtn = document.getElementById('import-btn');
+const importFile = document.getElementById('import-file');
+
+// Нажали «Импорт» → открываем окно выбора файла
+importBtn.addEventListener('click', () => importFile.click());
+
+// Файл выбран → отдаём его в importNotes
+importFile.addEventListener('change', () => {
+  const file = importFile.files[0]; // первый выбранный файл
+  if (file) importNotes(file);
+  importFile.value = ''; // сбрасываем выбор, чтобы можно было выбрать тот же файл ещё раз
+});
