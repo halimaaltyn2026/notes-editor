@@ -47,8 +47,10 @@
 
     // 5. Попытка вставить скрипт: настоящего тега быть не должно,
     //    а безопасный текст &lt;script должен остаться
-    check('скрипт не выживает', '<script>alert(1)</script>',
-      html => !html.includes('<script') && html.includes('&lt;script'));
+    // \x3c — это символ «<», записанный так, чтобы браузер не принял его за тег
+    check('скрипт не выживает', '\x3cscript>alert(1)\x3c/script>',
+      html => !html.includes('\x3cscript') && html.includes('&lt;script'));
+      
 
     // 6. Обработчик события в теге (ещё один способ атаки)
     check('onerror не выживает', '<img src=x onerror=alert(1)>',
