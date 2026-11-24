@@ -201,19 +201,6 @@ function updatePreview() {
   }, 200);
 }
 
-function escapeHtml(text) {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function renderMarkdown(text) {
-  let html = escapeHtml(text);
-  html = html.replace(/^# (.*)$/gm, "<h1>$1</h1>");
-  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-  return html.replace(/\n/g, "<br>");
-}
 const searchEl = document.getElementById('search');
 searchEl.addEventListener('input', () => {
   query = searchEl.value;
